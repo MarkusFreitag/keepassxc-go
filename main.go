@@ -29,4 +29,17 @@ func main() {
 		fmt.Printf("test-associate err: %s\n", err.Error())
 		return
 	}
+
+	entries, err := client.GetLogins("https://github.com")
+	if err != nil {
+		fmt.Printf("get-logins err: %s\n", err.Error())
+		return
+	}
+	for _, entry := range entries {
+		fmt.Printf("%s %s %s", entry.Name, entry.Login, entry.Password)
+		if entry.Expired {
+			fmt.Print(" expired")
+		}
+		fmt.Print("\n")
+	}
 }

@@ -15,7 +15,10 @@ import (
 
 const APPLICATIONNAME = "golang-keepassxc"
 
-var ErrInvalidPeerKey = errors.New("invalid peer key")
+var (
+	ErrInvalidPeerKey = errors.New("invalid peer key")
+	ErrNotImplemented = errors.New("not implemented yet")
+)
 
 type Client struct {
 	socketPath      string
@@ -49,7 +52,7 @@ func WithLogger(logger *logrus.Logger) ClientOption {
 }
 
 func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientOption) *Client {
-	if len(assoKey) == 0 {
+	if assoKey == nil || len(assoKey) == 0 {
 		assoKey = nacl.NewKey()
 	}
 
@@ -114,7 +117,6 @@ func (c *Client) sendMessage(msg Message, encrypted bool) (Response, error) {
 	}
 	msg["clientID"] = c.id
 
-	fmt.Printf("request: %#v\n", msg)
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return nil, err
@@ -139,10 +141,9 @@ func (c *Client) sendMessage(msg Message, encrypted bool) (Response, error) {
 	}
 
 	if err, ok := resp["error"]; ok {
-		return nil, errors.New(err.(string))
+		return nil, fmt.Errorf("%v %s", resp["errorCode"], err.(string))
 	}
 
-	fmt.Printf("response before: %#v\n", resp)
 	if encrypted {
 		decoded, err := base64.StdEncoding.DecodeString(resp["nonce"].(string) + resp["message"].(string))
 		if err != nil {
@@ -159,7 +160,6 @@ func (c *Client) sendMessage(msg Message, encrypted bool) (Response, error) {
 		}
 		resp["message"] = msg
 	}
-	fmt.Printf("response: %#v\n", resp)
 
 	return resp, err
 }
@@ -197,14 +197,27 @@ func (c *Client) ChangePublicKeys() error {
 }
 
 func (c *Client) GetDatabaseHash() (string, error) {
-	return "", nil
+	resp, err := c.sendMessage(Message{
+		"action": "get-databasehash",
+	}, true)
+	if err != nil {
+		return "", err
+	}
+	if v, ok := resp["message"]; ok {
+		if msg, ok := v.(map[string]interface{}); ok {
+			if hash, ok := msg["hash"]; ok {
+				return hash.(string), nil
+			}
+		}
+	}
+	return "", errors.New("get-databasehash failed")
 }
 
 func (c *Client) Associate() error {
 	resp, err := c.sendMessage(Message{
 		"action": "associate",
 		"key":    NaclKeyToB64(c.publicKey),
-		"idKey":  c.associatedKey,
+		"idKey":  NaclKeyToB64(c.associatedKey),
 	}, true)
 	if err != nil {
 		return err
@@ -223,40 +236,51 @@ func (c *Client) Associate() error {
 func (c *Client) TestAssociate() error {
 	_, err := c.sendMessage(Message{
 		"action": "test-associate",
-		"key":    c.associatedKey,
+		"key":    NaclKeyToB64(c.associatedKey),
 		"id":     c.associatedName,
 	}, true)
-	if err != nil {
-		return err
+	return err
+}
+
+func (c *Client) GeneratePassword() (*Entry, error) {
+	return nil, ErrNotImplemented
+}
+
+func (c *Client) GetLogins(url string) ([]*Entry, error) {
+	msg := Message{
+		"action": "get-logins",
+		"url":    url,
+		"keys": []map[string]string{
+			{
+				"id":  c.associatedName,
+				"key": NaclKeyToB64(c.associatedKey),
+			},
+		},
 	}
-	// evaluate response
-	return errors.New("test-associate failed")
-}
+	resp, err := c.sendMessage(msg, true)
+	if err != nil {
+		return nil, err
+	}
 
-func (c *Client) CreatePassword() (*Entry, error) {
-	return nil, nil
-}
-
-func (c *Client) GetLogins() ([]*Entry, error) {
-	return nil, nil
+	return resp.entries()
 }
 
 func (c *Client) SetLogin() error {
-	return nil
+	return ErrNotImplemented
 }
 
 func (c *Client) LockDatabase() error {
-	return nil
+	return ErrNotImplemented
 }
 
 func (c *Client) GetDatabaseGroups() ([]*DBGroup, error) {
-	return nil, nil
+	return nil, ErrNotImplemented
 }
 
 func (c *Client) CreateDatabaseGroup(name string) (string, string, error) {
-	return "", "", nil
+	return "", "", ErrNotImplemented
 }
 
 func (c *Client) GetTOTP(uuid string) (string, error) {
-	return "", nil
+	return "", ErrNotImplemented
 }
