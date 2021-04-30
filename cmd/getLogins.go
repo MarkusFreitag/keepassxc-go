@@ -19,10 +19,54 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package main
+package cmd
 
-import "github.com/MarkusFreitag/golang-keepassxc/cmd"
+import (
+	"fmt"
 
-func main() {
-	cmd.Execute()
+	"github.com/spf13/cobra"
+)
+
+var (
+	plaintext bool
+	showAll   bool
+)
+
+var getLoginsCmd = &cobra.Command{
+	Use:   "get-logins",
+	Short: "A brief description of your command",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		entries, err := client.GetLogins(args[0])
+		if err != nil {
+			return err
+		}
+		if len(entries) == 0 {
+			return fmt.Errorf("could not find entries for '%s'", args[0])
+		}
+		for _, entry := range entries {
+			pass := entry.Password.String()
+			if plaintext {
+				pass = entry.Password.Plaintext()
+			}
+			fmt.Printf("%s %s %s", entry.Name, entry.Login, pass)
+			if entry.Expired {
+				fmt.Print(" EXPIRED")
+			}
+			fmt.Print("\n")
+
+			if !showAll {
+				break
+			}
+		}
+
+		return nil
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(getLoginsCmd)
+
+	getLoginsCmd.Flags().BoolVar(&plaintext, "plaintext", false, "print out the password - BE CAREFUL")
+	getLoginsCmd.Flags().BoolVar(&showAll, "all", false, "show all matches otherwise only the first will be printed")
 }

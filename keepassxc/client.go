@@ -164,6 +164,10 @@ func (c *Client) sendMessage(msg Message, encrypted bool) (Response, error) {
 	return resp, err
 }
 
+func (c *Client) GetAssociatedProfile() (string, string) {
+	return c.associatedName, NaclKeyToB64(c.associatedKey)
+}
+
 func (c *Client) Connect() error {
 	if c.socketPath == "" {
 		return errors.New("unspecified socket path")
