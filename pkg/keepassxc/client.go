@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const APPLICATIONNAME = "golang-keepassxc"
+const APPLICATIONNAME = "keepassxc-go"
 
 var (
 	ErrInvalidPeerKey = errors.New("invalid peer key")

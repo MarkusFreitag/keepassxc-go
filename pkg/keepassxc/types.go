@@ -22,7 +22,7 @@ func (r Response) entries() (Entries, error) {
 		}
 	}
 	if len(data) == 0 {
-		return nil, errors.New("moo")
+		return nil, errors.New("invalid response does not include entries")
 	}
 
 	var entries Entries

@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/MarkusFreitag/golang-keepassxc/cmd"
+import "github.com/MarkusFreitag/keepassxc-go/cmd"
 
 func main() {
 	cmd.Execute()

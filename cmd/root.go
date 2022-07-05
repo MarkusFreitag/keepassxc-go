@@ -19,12 +19,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/kevinburke/nacl"
 	"github.com/spf13/cobra"
 
-	"github.com/MarkusFreitag/golang-keepassxc/keepassxc"
-	"github.com/MarkusFreitag/golang-keepassxc/keystore"
+	"github.com/MarkusFreitag/keepassxc-go/pkg/keepassxc"
+	"github.com/MarkusFreitag/keepassxc-go/pkg/keystore"
 )
 
 var (
@@ -33,8 +34,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "golang-keepassxc",
-	Short: "A brief description of your application",
+	Use:   "keepassxc-go",
+	Short: "interact with keepassxc via unix-socket",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		socketPath := fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid())
 		if _, err := os.Stat(socketPath); os.IsNotExist(err) {
@@ -81,7 +82,10 @@ var rootCmd = &cobra.Command{
 				return err
 			}
 			name, key := client.GetAssociatedProfile()
-			store.Profiles = append(store.Profiles, &keystore.Profile{Name: name, Key: key})
+			err = store.Add(&keystore.Profile{Name: name, Key: key})
+			if err != nil {
+				return err
+			}
 			err = store.Save()
 			if err != nil {
 				return err
@@ -97,9 +101,19 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+	if err := rootCmd.Execute(); err != nil {
+		msg := err.Error()
+		if strings.HasPrefix(msg, "error") {
+			rootCmd.SilenceUsage = true
+		}
+
+		fmt.Fprintln(os.Stderr, msg)
+		os.Exit(1)
+	}
 }
 
 func init() {
+	rootCmd.SilenceErrors = true
+
 	rootCmd.PersistentFlags().StringVarP(&profileName, "profile", "p", "", "Only necessary if keystore contains multiple profiles")
 }

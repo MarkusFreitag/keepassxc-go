@@ -2,6 +2,7 @@ package keystore
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -40,6 +41,23 @@ func Load() (*Keystore, error) {
 	}
 
 	return &Keystore{Profiles: make([]*Profile, 0)}, nil
+}
+
+func (k *Keystore) Add(prof *Profile) error {
+	if p, err := k.Get(prof.Name); p != nil && err == nil {
+		return fmt.Errorf("profile named '%s' already exists", prof.Name)
+	}
+	k.Profiles = append(k.Profiles, prof)
+	return nil
+}
+
+func (k *Keystore) Get(name string) (*Profile, error) {
+	for _, profile := range k.Profiles {
+		if profile.Name == name {
+			return profile, nil
+		}
+	}
+	return nil, fmt.Errorf("profile named '%s' not found", name)
 }
 
 func (k *Keystore) Save() error {
