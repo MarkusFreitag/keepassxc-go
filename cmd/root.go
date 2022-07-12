@@ -37,7 +37,7 @@ var rootCmd = &cobra.Command{
 	Use:   "keepassxc-go",
 	Short: "interact with keepassxc via unix-socket",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		socketPath := fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid())
+		socketPath := keepassxc.SocketPath()
 		if _, err := os.Stat(socketPath); os.IsNotExist(err) {
 			return fmt.Errorf("keepassxc socket not found '%s'", socketPath)
 		}
