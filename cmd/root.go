@@ -52,7 +52,7 @@ var rootCmd = &cobra.Command{
 		case 0:
 			break
 		case 1:
-			key = keepassxc.B64ToNaclKey(store.Profiles[0].Key)
+			key = store.Profiles[0].NaclKey()
 			profileName = store.Profiles[0].Name
 		default:
 			if profileName == "" {
@@ -60,7 +60,7 @@ var rootCmd = &cobra.Command{
 			}
 			for _, profile := range store.Profiles {
 				if profile.Name == profileName {
-					key = keepassxc.B64ToNaclKey(profile.Key)
+					key = profile.NaclKey()
 				}
 			}
 			if key == nil {

@@ -2,16 +2,32 @@ package keystore
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/MarkusFreitag/keepassxc-go/internal"
+	"github.com/kevinburke/nacl"
 )
 
 const FILENAME = ".keepassxc.keystore"
 
+var (
+	ErrEmptyKeystore  = errors.New("keystore does not contain any profiles")
+	ErrToManyProfiles = errors.New("keystore has multiple profiles, please specify the one to use")
+)
+
 type Profile struct {
 	Name string `json:"name"`
 	Key  string `json:"key"`
+}
+
+func (p *Profile) NaclKey() nacl.Key {
+	if p.Key == "" {
+		return nil
+	}
+	return internal.B64ToNaclKey(p.Key)
 }
 
 type Keystore struct {
@@ -52,9 +68,19 @@ func (k *Keystore) Add(prof *Profile) error {
 }
 
 func (k *Keystore) Get(name string) (*Profile, error) {
-	for _, profile := range k.Profiles {
-		if profile.Name == name {
-			return profile, nil
+	switch len(k.Profiles) {
+	case 0:
+		return nil, ErrEmptyKeystore
+	case 1:
+		return k.Profiles[0], nil
+	default:
+		if name == "" {
+			return nil, ErrToManyProfiles
+		}
+		for _, profile := range k.Profiles {
+			if profile.Name == name {
+				return profile, nil
+			}
 		}
 	}
 	return nil, fmt.Errorf("profile named '%s' not found", name)
