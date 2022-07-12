@@ -72,7 +72,9 @@ func (k *Keystore) Get(name string) (*Profile, error) {
 	case 0:
 		return nil, ErrEmptyKeystore
 	case 1:
-		return k.Profiles[0], nil
+		if profile := k.Profiles[0]; name == "" || profile.Name == name {
+			return profile, nil
+		}
 	default:
 		if name == "" {
 			return nil, ErrToManyProfiles
