@@ -1,4 +1,4 @@
-package keepassxc
+package internal
 
 import (
 	"encoding/base64"
