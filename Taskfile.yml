@@ -1,0 +1,75 @@
+version: '2'
+output: 'prefixed'
+
+vars:
+  CGO_ENABLED: 0
+  PATH: 'github.com/MarkusFreitag/keepassxc-go'
+  BINARY_NAME: 'keepassxc-go'
+
+tasks:
+  all:
+    deps: [build]
+  build:
+    desc: Start the build process
+    deps:
+      - task: clean
+      - task: bin
+  format:
+    desc: Run gofmt for the project
+    cmds:
+      - bash -c "diff -u <(echo -n) <(go fmt ./...)"
+  lint:
+    desc: Run golangci-lint for the project
+    deps: [format]
+    cmds:
+      - golangci-lint run
+  test:
+    desc: Run go test unittests
+    cmds:
+      - mkdir -p coverage
+      - go test -v ./... -coverprofile=coverage/coverage.out
+  coverage:
+    desc: Generate coverage report
+    deps: [test]
+    cmds:
+      - go tool cover -html=coverage/coverage.out -o coverage/coverage.html
+  clean:
+    desc: Clean up files of the build process
+    cmds:
+      - rm -rf ci-build/ coverage/
+  bin:
+    desc: Build the go binary
+    cmds:
+      - go build -a -ldflags "-X {{.PATH}}/cmd.BuildDate={{.DATE}} -X {{.PATH}}/cmd.BuildVersion={{.VERSION}} -extldflags '-static' -s -w" -o ci-build/{{.BINARY_NAME}}
+    vars:
+      DATE:
+        sh: date -Iseconds
+      VERSION:
+        sh: git describe --tags || git describe --always
+  changelog:
+    desc: Add a new changelog entry
+    cmds:
+      - ish: changelogger
+  release:
+    desc: Create a new release
+    cmds:
+      - ish: changelogger release new
+        ignore_error: yes
+      - git add CHANGELOG.md
+      - git commit -m "Bump version to $(changelogger release last --version-only)" -m "$(changelogger release last)"
+      - git tag -a "$(changelogger release last --version-only)" -m $(changelogger release last)
+      - git push
+      - git push --tags
+    env:
+      CHANGELOGGER_VERSION_FORMAT: semver
+  dl-deps:
+    desc: Downloads cli dependencies
+    cmds:
+      - go install github.com/golangci/golangci-lint@latest
+      - go install github.com/goreleaser/goreleaser@latest
+      - go install github.com/goreleaser/godownloader@latest
+  generate-install-script:
+    desc: Generate install script using https://github.com/goreleaser/godownloader
+    cmds:
+      - godownloader --repo MarkusFreitag/keepassxc-go -o install-keypassxc-go.sh
+      - cp ./install-keypassxc-go.sh ./docs/install.sh

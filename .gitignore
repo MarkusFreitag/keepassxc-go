@@ -1,0 +1,4 @@
+*.swp
+ci-build/
+coverage/
+bin/

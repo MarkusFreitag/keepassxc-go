@@ -6,26 +6,31 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/kevinburke/nacl"
 	"github.com/kevinburke/nacl/box"
 	"github.com/kevinburke/nacl/scalarmult"
-	"github.com/sirupsen/logrus"
+
+	"github.com/MarkusFreitag/keepassxc-go/internal"
 )
 
-const APPLICATIONNAME = "golang-keepassxc"
+const APPLICATIONNAME = "keepassxc-go"
 
 var (
-	ErrInvalidPeerKey = errors.New("invalid peer key")
-	ErrNotImplemented = errors.New("not implemented yet")
+	ErrUnspecifiedSocketPath = errors.New("unspecified socket path")
+	ErrInvalidPeerKey        = errors.New("invalid peer key")
+	ErrNotImplemented        = errors.New("not implemented yet")
 )
+
+func SocketPath() string {
+	return fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid())
+}
 
 type Client struct {
 	socketPath      string
 	applicationName string
 	socket          *net.UnixConn
-	logger          *logrus.Logger
-	log             *logrus.Entry
 
 	privateKey nacl.Key
 	publicKey  nacl.Key
@@ -45,12 +50,6 @@ func WithApplicationName(name string) ClientOption {
 	}
 }
 
-func WithLogger(logger *logrus.Logger) ClientOption {
-	return func(client *Client) {
-		client.logger = logger
-	}
-}
-
 func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientOption) *Client {
 	if assoKey == nil || len(assoKey) == 0 {
 		assoKey = nacl.NewKey()
@@ -59,7 +58,6 @@ func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientO
 	client := &Client{
 		socketPath:      socketPath,
 		applicationName: APPLICATIONNAME,
-		logger:          logrus.New(),
 
 		privateKey: nacl.NewKey(),
 
@@ -67,17 +65,12 @@ func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientO
 		associatedKey:  assoKey,
 	}
 	client.publicKey = scalarmult.Base(client.privateKey)
-	client.logger.SetLevel(logrus.PanicLevel)
 
 	for _, option := range options {
 		option(client)
 	}
 
-	client.id = client.applicationName + NaclNonceToB64(nacl.NewNonce())
-
-	client.log = client.logger.WithFields(logrus.Fields{
-		"application-name": client.applicationName,
-	})
+	client.id = client.applicationName + internal.NaclNonceToB64(nacl.NewNonce())
 
 	return client
 }
@@ -113,7 +106,7 @@ func (c *Client) sendMessage(msg Message, encrypted bool) (Response, error) {
 			"nonce":   base64.StdEncoding.EncodeToString(encryptedMsg[:nacl.NonceSize]),
 		}
 	} else {
-		msg["nonce"] = NaclNonceToB64(nacl.NewNonce())
+		msg["nonce"] = internal.NaclNonceToB64(nacl.NewNonce())
 	}
 	msg["clientID"] = c.id
 
@@ -165,12 +158,12 @@ func (c *Client) sendMessage(msg Message, encrypted bool) (Response, error) {
 }
 
 func (c *Client) GetAssociatedProfile() (string, string) {
-	return c.associatedName, NaclKeyToB64(c.associatedKey)
+	return c.associatedName, internal.NaclKeyToB64(c.associatedKey)
 }
 
 func (c *Client) Connect() error {
 	if c.socketPath == "" {
-		return errors.New("unspecified socket path")
+		return ErrUnspecifiedSocketPath
 	}
 
 	var err error
@@ -188,13 +181,13 @@ func (c *Client) Disconnect() error {
 func (c *Client) ChangePublicKeys() error {
 	resp, err := c.sendMessage(Message{
 		"action":    "change-public-keys",
-		"publicKey": NaclKeyToB64(c.publicKey),
+		"publicKey": internal.NaclKeyToB64(c.publicKey),
 	}, false)
 	if err != nil {
 		return err
 	}
 	if peerKey, ok := resp["publicKey"]; ok {
-		c.peerKey = B64ToNaclKey(peerKey.(string))
+		c.peerKey = internal.B64ToNaclKey(peerKey.(string))
 		return nil
 	}
 	return errors.New("change-public-keys failed")
@@ -220,8 +213,8 @@ func (c *Client) GetDatabaseHash() (string, error) {
 func (c *Client) Associate() error {
 	resp, err := c.sendMessage(Message{
 		"action": "associate",
-		"key":    NaclKeyToB64(c.publicKey),
-		"idKey":  NaclKeyToB64(c.associatedKey),
+		"key":    internal.NaclKeyToB64(c.publicKey),
+		"idKey":  internal.NaclKeyToB64(c.associatedKey),
 	}, true)
 	if err != nil {
 		return err
@@ -240,7 +233,7 @@ func (c *Client) Associate() error {
 func (c *Client) TestAssociate() error {
 	_, err := c.sendMessage(Message{
 		"action": "test-associate",
-		"key":    NaclKeyToB64(c.associatedKey),
+		"key":    internal.NaclKeyToB64(c.associatedKey),
 		"id":     c.associatedName,
 	}, true)
 	return err
@@ -257,7 +250,7 @@ func (c *Client) GetLogins(url string) ([]*Entry, error) {
 		"keys": []map[string]string{
 			{
 				"id":  c.associatedName,
-				"key": NaclKeyToB64(c.associatedKey),
+				"key": internal.NaclKeyToB64(c.associatedKey),
 			},
 		},
 	}

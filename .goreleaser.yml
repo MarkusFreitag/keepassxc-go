@@ -1,0 +1,39 @@
+build:
+  binary: keepassxc-go
+  main: main.go
+  ldflags:
+    - >
+      -s -w
+      -X github.com/MarkusFreitag/keepassxc-go/cmd.buildVersion={{.Version}}
+      -X github.com/MarkusFreitag/keepassxc-go/cmd.buildDate={{.Date}}
+  goos:
+    - linux
+    - darwin
+  goarch:
+    - amd64
+    - arm64
+  env:
+    - CGO_ENABLED=0
+
+archives:
+  - name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
+
+release:
+  draft: true
+
+snapshot:
+  name_template: "{{.Tag}}"
+
+checksum:
+  name_template: "keepassxc-go_checksums.txt"
+
+nfpms:
+  - package_name: keepassxc-go
+    homepage: https://github.com/MarkusFreitag/keepassxc-go
+    maintainer: Markus Freitag <fmarkus@mailbox.org>
+    description: Golang library and CLI tool to interact with KeepassXC
+    license: MIT
+    formats:
+      - deb 
+      - rpm
+    file_name_template: "{{.ProjectName}}_{{.Os}}_{{.Arch}}"

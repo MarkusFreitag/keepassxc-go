@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+var ErrInvalidResponse = errors.New("invalid response does not include entries")
+
 type Message map[string]interface{}
 
 type Response map[string]interface{}
@@ -22,7 +24,7 @@ func (r Response) entries() (Entries, error) {
 		}
 	}
 	if len(data) == 0 {
-		return nil, errors.New("moo")
+		return nil, ErrInvalidResponse
 	}
 
 	var entries Entries
