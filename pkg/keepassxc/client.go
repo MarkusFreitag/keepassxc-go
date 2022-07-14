@@ -18,8 +18,9 @@ import (
 const APPLICATIONNAME = "keepassxc-go"
 
 var (
-	ErrInvalidPeerKey = errors.New("invalid peer key")
-	ErrNotImplemented = errors.New("not implemented yet")
+	ErrUnspecifiedSocketPath = errors.New("unspecified socket path")
+	ErrInvalidPeerKey        = errors.New("invalid peer key")
+	ErrNotImplemented        = errors.New("not implemented yet")
 )
 
 func SocketPath() string {
@@ -162,7 +163,7 @@ func (c *Client) GetAssociatedProfile() (string, string) {
 
 func (c *Client) Connect() error {
 	if c.socketPath == "" {
-		return errors.New("unspecified socket path")
+		return ErrUnspecifiedSocketPath
 	}
 
 	var err error
