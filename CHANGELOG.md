@@ -8,5 +8,7 @@
         - associate
         - test-associate
         - get-logins
+      * cmd: CLI tool using the client
+        - search for credentials
 
 *Not released yet*
