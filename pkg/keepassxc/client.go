@@ -11,7 +11,6 @@ import (
 	"github.com/kevinburke/nacl"
 	"github.com/kevinburke/nacl/box"
 	"github.com/kevinburke/nacl/scalarmult"
-	"github.com/sirupsen/logrus"
 
 	"github.com/MarkusFreitag/keepassxc-go/internal"
 )
@@ -31,8 +30,6 @@ type Client struct {
 	socketPath      string
 	applicationName string
 	socket          *net.UnixConn
-	logger          *logrus.Logger
-	log             *logrus.Entry
 
 	privateKey nacl.Key
 	publicKey  nacl.Key
@@ -52,12 +49,6 @@ func WithApplicationName(name string) ClientOption {
 	}
 }
 
-func WithLogger(logger *logrus.Logger) ClientOption {
-	return func(client *Client) {
-		client.logger = logger
-	}
-}
-
 func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientOption) *Client {
 	if assoKey == nil || len(assoKey) == 0 {
 		assoKey = nacl.NewKey()
@@ -66,7 +57,6 @@ func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientO
 	client := &Client{
 		socketPath:      socketPath,
 		applicationName: APPLICATIONNAME,
-		logger:          logrus.New(),
 
 		privateKey: nacl.NewKey(),
 
@@ -74,17 +64,12 @@ func NewClient(socketPath, assoName string, assoKey nacl.Key, options ...ClientO
 		associatedKey:  assoKey,
 	}
 	client.publicKey = scalarmult.Base(client.privateKey)
-	client.logger.SetLevel(logrus.PanicLevel)
 
 	for _, option := range options {
 		option(client)
 	}
 
 	client.id = client.applicationName + internal.NaclNonceToB64(nacl.NewNonce())
-
-	client.log = client.logger.WithFields(logrus.Fields{
-		"application-name": client.applicationName,
-	})
 
 	return client
 }
