@@ -57,7 +57,7 @@ tasks:
         ignore_error: yes
       - git add CHANGELOG.md
       - git commit -m "Bump version to $(changelogger release last --version-only)" -m "$(changelogger release last)"
-      - git tag -a "$(changelogger release last --version-only)" -m $(changelogger release last)
+      - git tag -a "$(changelogger release last --version-only)" -m "$(changelogger release last)"
       - git push
       - git push --tags
     env:
