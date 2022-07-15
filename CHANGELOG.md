@@ -1,8 +1,8 @@
-# For next release
+# Patch Release v1.0.1 (2022-07-15)
   * **Markus Freitag**
     * pkg/keystore: fix keystore file permission
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Major Release v1.0.0 (2022-07-14)
   * **Markus Freitag**
