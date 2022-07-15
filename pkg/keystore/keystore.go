@@ -11,7 +11,7 @@ import (
 	"github.com/kevinburke/nacl"
 )
 
-const FILENAME = ".keepassxc.keystore"
+const FILENAME = "keepassxc.keystore"
 
 var (
 	ErrEmptyKeystore  = errors.New("keystore does not contain any profiles")
@@ -99,5 +99,5 @@ func (k *Keystore) Save() error {
 		return err
 	}
 
-	return os.WriteFile(filepath.Join(dir, FILENAME), content, 0744)
+	return os.WriteFile(filepath.Join(dir, FILENAME), content, 0600)
 }
