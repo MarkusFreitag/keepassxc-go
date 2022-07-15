@@ -1,3 +1,9 @@
+# For next release
+  * **Markus Freitag**
+    * pkg/keystore: fix keystore file permission
+
+*Not released yet*
+
 # Major Release v1.0.0 (2022-07-14)
   * **Markus Freitag**
     * initial release
