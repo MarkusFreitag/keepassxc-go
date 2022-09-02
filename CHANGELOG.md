@@ -1,3 +1,9 @@
+# For next release
+  * **Markus Freitag**
+    * pkg/client: fix imports for darwin
+
+*Not released yet*
+
 # Minor Release v1.1.0 (2022-09-02)
   * **Markus Freitag**
     * pkg/client: add darwin support, search socket in $TMPDIR
