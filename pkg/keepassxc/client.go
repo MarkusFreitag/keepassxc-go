@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"os"
 
 	"github.com/kevinburke/nacl"
 	"github.com/kevinburke/nacl/box"
@@ -22,10 +21,6 @@ var (
 	ErrInvalidPeerKey        = errors.New("invalid peer key")
 	ErrNotImplemented        = errors.New("not implemented yet")
 )
-
-func SocketPath() string {
-	return fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid())
-}
 
 type Client struct {
 	socketPath      string
