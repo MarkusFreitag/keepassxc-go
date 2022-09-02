@@ -3,6 +3,13 @@
 
 package keepassxc
 
+import (
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
 func SocketPath() (string, error) {
 	tmpDir, ok := os.LookupEnv("TMPDIR")
 	if !ok {
