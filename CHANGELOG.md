@@ -1,8 +1,8 @@
-# For next release
+# Minor Release v1.1.0 (2022-09-02)
   * **Markus Freitag**
     * pkg/client: add darwin support, search socket in $TMPDIR
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Patch Release v1.0.1 (2022-07-15)
   * **Markus Freitag**
