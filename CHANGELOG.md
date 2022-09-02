@@ -1,3 +1,9 @@
+# For next release
+  * **Markus Freitag**
+    * pkg/client: add darwin support, search socket in $TMPDIR
+
+*Not released yet*
+
 # Patch Release v1.0.1 (2022-07-15)
   * **Markus Freitag**
     * pkg/keystore: fix keystore file permission
