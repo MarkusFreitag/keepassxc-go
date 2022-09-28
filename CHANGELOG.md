@@ -1,8 +1,8 @@
-# For next release
+# Minor Release v1.2.0 (2022-09-28)
   * **Markus Freitag**
     * cmd/getLogins: add flag to enable json output
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Patch Release v1.1.1 (2022-09-02)
   * **Markus Freitag**
