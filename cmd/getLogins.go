@@ -22,14 +22,16 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	plaintext bool
-	showAll   bool
+	plaintext  bool
+	showAll    bool
+	jsonOutput bool
 )
 
 var getLoginsCmd = &cobra.Command{
@@ -44,6 +46,29 @@ var getLoginsCmd = &cobra.Command{
 		if len(entries) == 0 {
 			return fmt.Errorf("could not find entries for '%s'", args[0])
 		}
+
+		if jsonOutput {
+			out := make([]map[string]string, len(entries))
+			for idx, entry := range entries {
+				pass := entry.Password.String()
+				if plaintext {
+					pass = entry.Password.Plaintext()
+				}
+				out[idx] = map[string]string{
+					"name": entry.Name,
+					"user": entry.Login,
+					"pass": pass,
+				}
+			}
+
+			data, err := json.Marshal(out)
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
 		for _, entry := range entries {
 			pass := entry.Password.String()
 			if plaintext {
@@ -69,4 +94,5 @@ func init() {
 
 	getLoginsCmd.Flags().BoolVar(&plaintext, "plaintext", false, "print out the password - BE CAREFUL")
 	getLoginsCmd.Flags().BoolVar(&showAll, "all", false, "show all matches otherwise only the first will be printed")
+	getLoginsCmd.Flags().BoolVar(&jsonOutput, "json", false, "format output as json")
 }

@@ -1,3 +1,9 @@
+# For next release
+  * **Markus Freitag**
+    * cmd/getLogins: add flag to enable json output
+
+*Not released yet*
+
 # Patch Release v1.1.1 (2022-09-02)
   * **Markus Freitag**
     * pkg/client: fix imports for darwin
