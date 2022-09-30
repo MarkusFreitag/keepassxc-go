@@ -1,3 +1,10 @@
+# For next release
+  * **Markus Freitag**
+    * pkg/keystore: add convenience method for profile loading
+    * pkg/keepassxc: add convenience method for client initialization
+
+*Not released yet*
+
 # Minor Release v1.2.0 (2022-09-28)
   * **Markus Freitag**
     * cmd/getLogins: add flag to enable json output
