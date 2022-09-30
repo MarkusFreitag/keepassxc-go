@@ -57,10 +57,16 @@ func TestKeystore(t *testing.T) {
 	store, err = keystore.Load()
 	require.Nil(t, err)
 	require.NotNil(t, store)
+	require.Equal(t, "abc", store.Default)
 	require.Equal(t, 1, len(store.Profiles))
 	require.Equal(t, "abc", store.Profiles[0].Name)
 	require.Equal(t, "secretkeysecretkeysecretkeysecretkey", store.Profiles[0].Key)
 	require.NotNil(t, store.Profiles[0].NaclKey())
+
+	profile, err = store.DefaultProfile()
+	require.Nil(t, err)
+	require.NotNil(t, profile)
+	require.Equal(t, "abc", profile.Name)
 
 	expectedProfile = &keystore.Profile{Name: "def", Key: "secretkeysecretkeysecretkeysecretkey"}
 	err = store.Add(expectedProfile)
@@ -75,4 +81,47 @@ func TestKeystore(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, profile)
 	require.Equal(t, *expectedProfile, *profile)
+
+	profile, err = store.DefaultProfile()
+	require.Nil(t, err)
+	require.NotNil(t, profile)
+	require.Equal(t, "abc", profile.Name)
+
+	store.Default = ""
+
+	err = store.Save()
+	require.Nil(t, err)
+
+	store, err = keystore.Load()
+	require.Nil(t, err)
+	require.NotNil(t, store)
+	require.Empty(t, "", store.Default)
+
+	profile, err = store.DefaultProfile()
+	require.Nil(t, profile)
+	require.NotNil(t, err)
+	require.Equal(t, keystore.ErrToManyProfiles, err)
+
+	store.Default = "abc"
+	require.Nil(t, store.Save())
+
+	store, err = keystore.Load()
+	require.Nil(t, err)
+	require.NotNil(t, store)
+	require.Equal(t, "abc", store.Default)
+
+	store.Default = "moo"
+	err = store.Save()
+	require.Nil(t, err)
+
+	store, err = keystore.Load()
+	require.Nil(t, store)
+	require.NotNil(t, err)
+	require.Equal(t, keystore.ErrDefaultProfileDoesNotExist, err)
+
+	store = new(keystore.Keystore)
+	profile, err = store.DefaultProfile()
+	require.Nil(t, err)
+	require.NotNil(t, profile)
+	require.Empty(t, profile.Name)
 }

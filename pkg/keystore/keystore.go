@@ -14,8 +14,9 @@ import (
 const FILENAME = "keepassxc.keystore"
 
 var (
-	ErrEmptyKeystore  = errors.New("keystore does not contain any profiles")
-	ErrToManyProfiles = errors.New("keystore has multiple profiles, please specify the one to use")
+	ErrEmptyKeystore              = errors.New("keystore does not contain any profiles")
+	ErrToManyProfiles             = errors.New("keystore has multiple profiles, please specify the one to use")
+	ErrDefaultProfileDoesNotExist = errors.New("default profile does not exist")
 )
 
 type Profile struct {
@@ -31,7 +32,9 @@ func (p *Profile) NaclKey() nacl.Key {
 }
 
 type Keystore struct {
-	Profiles []*Profile `json:"profiles"`
+	defaultProfile *Profile
+	Default        string     `json:"default"`
+	Profiles       []*Profile `json:"profiles"`
 }
 
 func Load() (*Keystore, error) {
@@ -51,6 +54,22 @@ func Load() (*Keystore, error) {
 		err = json.Unmarshal(content, store)
 		if err != nil {
 			return nil, err
+		}
+
+		if store.Default != "" {
+			for _, profile := range store.Profiles {
+				if store.Default == profile.Name {
+					store.defaultProfile = profile
+				}
+			}
+			if store.defaultProfile == nil {
+				return nil, ErrDefaultProfileDoesNotExist
+			}
+		}
+
+		if store.Default == "" && len(store.Profiles) == 1 {
+			store.defaultProfile = store.Profiles[0]
+			store.Default = store.defaultProfile.Name
 		}
 
 		return store, nil
@@ -100,4 +119,16 @@ func (k *Keystore) Save() error {
 	}
 
 	return os.WriteFile(filepath.Join(dir, FILENAME), content, 0600)
+}
+
+func (k *Keystore) DefaultProfile() (*Profile, error) {
+	if k.defaultProfile != nil {
+		return k.defaultProfile, nil
+	}
+
+	if len(k.Profiles) > 1 {
+		return nil, ErrToManyProfiles
+	}
+
+	return new(Profile), nil
 }
