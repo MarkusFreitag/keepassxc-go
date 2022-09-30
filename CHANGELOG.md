@@ -1,9 +1,9 @@
-# For next release
+# Minor Release v1.3.0 (2022-09-30)
   * **Markus Freitag**
     * pkg/keystore: add convenience method for profile loading
     * pkg/keepassxc: add convenience method for client initialization
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Minor Release v1.2.0 (2022-09-28)
   * **Markus Freitag**
