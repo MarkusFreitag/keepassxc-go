@@ -12,6 +12,7 @@ import (
 	"github.com/kevinburke/nacl/scalarmult"
 
 	"github.com/MarkusFreitag/keepassxc-go/internal"
+	"github.com/MarkusFreitag/keepassxc-go/pkg/keystore"
 )
 
 const APPLICATIONNAME = "keepassxc-go"
@@ -275,4 +276,57 @@ func (c *Client) CreateDatabaseGroup(name string) (string, string, error) {
 
 func (c *Client) GetTOTP(uuid string) (string, error) {
 	return "", ErrNotImplemented
+}
+
+func DefaultClient() (*Client, error) {
+	store, err := keystore.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	profile, err := store.DefaultProfile()
+	if err != nil {
+		return nil, err
+	}
+
+	socketPath, err := SocketPath()
+	if err != nil {
+		return nil, err
+	}
+
+	client := NewClient(
+		socketPath,
+		profile.Name,
+		profile.NaclKey(),
+	)
+
+	if err := client.Connect(); err != nil {
+		return nil, err
+	}
+
+	if err := client.ChangePublicKeys(); err != nil {
+		return nil, err
+	}
+
+	if key := profile.NaclKey(); key == nil {
+		if err := client.Associate(); err != nil {
+			return nil, err
+		}
+
+		profile.Name, profile.Key = client.GetAssociatedProfile()
+
+		if err := store.Add(profile); err != nil {
+			return nil, err
+		}
+
+		if err := store.Save(); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := client.TestAssociate(); err != nil {
+			return nil, err
+		}
+	}
+
+	return client, nil
 }
