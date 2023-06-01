@@ -1,11 +1,11 @@
-# For next release
+# Patch Release v1.3.1 (2023-06-01)
   * **Markus Freitag**
     * go: upgrade to 1.20
     * tests: replace original monkey with license-compatible version
       The original version of monkey by bouk has been archived in 2020 and
       its license prohibits the usage of it in any project.
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Minor Release v1.3.0 (2022-09-30)
   * **Markus Freitag**
