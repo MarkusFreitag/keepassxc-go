@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"bou.ke/monkey"
+	monkey "github.com/agiledragon/gomonkey/v2"
 	"github.com/stretchr/testify/require"
 
 	"github.com/MarkusFreitag/keepassxc-go/pkg/keystore"
@@ -16,10 +16,10 @@ func TestKeystore(t *testing.T) {
 	require.NotEmpty(t, fakeUserConfigDir)
 	defer os.RemoveAll(fakeUserConfigDir)
 
-	monkey.Patch(os.UserConfigDir, func() (string, error) {
+	patch := monkey.ApplyFunc(os.UserConfigDir, func() (string, error) {
 		return fakeUserConfigDir, nil
 	})
-	defer monkey.Unpatch(os.UserConfigDir)
+	defer patch.Reset()
 
 	require.Nil(t, new(keystore.Profile).NaclKey())
 
