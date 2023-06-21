@@ -26,11 +26,14 @@ func SocketPath() (string, error) {
 	for _, base := range lookupPaths {
 		filename = path.Join(base, SocketName)
 		_, err = os.Stat(filename)
-		switch {
-		case errors.Is(err, nil):
+		
+		if errors.Is(err, nil) {
 			break
-		case errors.Is(err, os.ErrNotExist):
-		default:
+		}
+		
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		} else {
 			return "", fmt.Errorf("keepassxc socket lookup error: %s", err)
 		}
 	}
