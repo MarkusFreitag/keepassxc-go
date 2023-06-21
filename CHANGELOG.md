@@ -1,3 +1,10 @@
+# For next release
+  * **robert-renk**
+    * pkg/keepassxc/client_linux: add support for different socket locations
+      Distributions store the keepassxc socket in different locations, e.g. with snap in $HOME/snap/...
+
+*Not released yet*
+
 # Patch Release v1.3.1 (2023-06-01)
   * **Markus Freitag**
     * go: upgrade to 1.20
