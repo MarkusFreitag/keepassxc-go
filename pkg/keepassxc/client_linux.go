@@ -15,6 +15,7 @@ var lookupPaths = []string{
 	os.Getenv("XDG_RUNTIME_DIR"),
 	os.Getenv("TMPDIR"),
 	path.Join(os.Getenv("HOME"), "/snap/keepassxc/common/"),
+	fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid()),
 }
 
 func SocketPath() (string, error) {
