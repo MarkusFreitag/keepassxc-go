@@ -1,9 +1,9 @@
-# For next release
+# Minor Release v1.4.0 (2023-06-21)
   * **robert-renk**
     * pkg/keepassxc/client_linux: add support for different socket locations
       Distributions store the keepassxc socket in different locations, e.g. with snap in $HOME/snap/...
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Patch Release v1.3.1 (2023-06-01)
   * **Markus Freitag**
