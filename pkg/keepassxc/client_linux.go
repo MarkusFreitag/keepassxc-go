@@ -6,14 +6,37 @@ package keepassxc
 import (
 	"fmt"
 	"os"
+	"path"
+	"errors"
 )
 
+const SocketName = "org.keepassxc.KeePassXC.BrowserServer"
+var lookupPaths = []string{
+	os.Getenv("XDG_RUNTIME_DIR"),
+	os.Getenv("TMPDIR"),
+	path.Join(os.Getenv("HOME"), "/snap/keepassxc/common/"),
+	fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid()),
+}
+
 func SocketPath() (string, error) {
-	path := fmt.Sprintf(
-		"/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid(),
-	)
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return "", fmt.Errorf("keepassxc socket not found '%s'", path)
+	var err error
+	var filename string
+
+	for _, base := range lookupPaths {
+		filename = path.Join(base, SocketName)
+		_, err = os.Stat(filename)
+		switch {
+		case errors.Is(err, nil):
+			break
+		case errors.Is(err, os.ErrNotExist):
+		default:
+			return "", fmt.Errorf("keepassxc socket lookup error: %s", err)
+		}
 	}
-	return path, nil
+
+	if err != nil {
+		return "", fmt.Errorf("keepassxc socket not found")
+	}
+
+	return filename, nil
 }
