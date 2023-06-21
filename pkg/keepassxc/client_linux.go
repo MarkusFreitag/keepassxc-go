@@ -4,18 +4,19 @@
 package keepassxc
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
-	"errors"
 )
 
 const SocketName = "org.keepassxc.KeePassXC.BrowserServer"
+
 var lookupPaths = []string{
 	os.Getenv("XDG_RUNTIME_DIR"),
 	os.Getenv("TMPDIR"),
 	path.Join(os.Getenv("HOME"), "/snap/keepassxc/common/"),
-	fmt.Sprintf("/run/user/%d/org.keepassxc.KeePassXC.BrowserServer", os.Getuid()),
+	fmt.Sprintf("/run/user/%d/", os.Getuid()),
 }
 
 func SocketPath() (string, error) {
