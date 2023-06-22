@@ -1,3 +1,9 @@
+# For next release
+  * **Markus Freitag**
+    * pkg/keepassxc/client_linux: fix socket-path lookup routine
+
+*Not released yet*
+
 # Minor Release v1.4.0 (2023-06-21)
   * **robert-renk**
     * pkg/keepassxc/client_linux: add support for different socket locations

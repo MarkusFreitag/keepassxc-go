@@ -20,22 +20,22 @@ var lookupPaths = []string{
 }
 
 func SocketPath() (string, error) {
-	var err error
 	var filename string
 
 	for _, base := range lookupPaths {
 		filename = path.Join(base, SocketName)
-		_, err = os.Stat(filename)
-		switch {
-		case errors.Is(err, nil):
-			break
-		case errors.Is(err, os.ErrNotExist):
-		default:
+
+		if _, err := os.Stat(filename); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				continue
+			}
 			return "", fmt.Errorf("keepassxc socket lookup error: %s", err)
 		}
+
+		break
 	}
 
-	if err != nil {
+	if filename == "" {
 		return "", fmt.Errorf("keepassxc socket not found")
 	}
 
