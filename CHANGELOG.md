@@ -1,8 +1,8 @@
-# For next release
+# Patch Release v1.4.1 (2023-06-22)
   * **Markus Freitag**
     * pkg/keepassxc/client_linux: fix socket-path lookup routine
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Minor Release v1.4.0 (2023-06-21)
   * **robert-renk**
