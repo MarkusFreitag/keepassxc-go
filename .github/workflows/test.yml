@@ -33,8 +33,13 @@ jobs:
         with:
           version: latest
 
-      - name: run unit-tests
-        run: ./bin/task test
+      - name: build
+        run: ./bin/task build
         env:
           GOOS: ${{matrix.goos}}
           GOARCH: ${{matrix.goarch}}
+
+      - name: run unit-tests
+        run: ./bin/task test
+        # Run only on linux
+        if: ${{matrix.goos == 'linux'}}
