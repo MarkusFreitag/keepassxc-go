@@ -163,7 +163,7 @@ func (c *Client) Connect() error {
 	}
 
 	var err error
-	c.socket, err = Connect(c.socketPath)
+	c.socket, err = connect(c.socketPath)
 	return err
 }
 

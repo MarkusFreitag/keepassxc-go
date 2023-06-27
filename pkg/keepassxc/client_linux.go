@@ -43,6 +43,6 @@ func SocketPath() (string, error) {
 	return filename, nil
 }
 
-func Connect(socketPath string) (net.Conn, error) {
+func connect(socketPath string) (net.Conn, error) {
 	return net.DialUnix("unix", nil, &net.UnixAddr{Name: socketPath, Net: "unix"})
 }

@@ -18,6 +18,6 @@ func SocketPath() (string, error) {
 	return fmt.Sprintf(`\\.\pipe\%s_%s`, SocketName, os.Getenv("USERNAME")), nil
 }
 
-func Connect(socketPath string) (net.Conn, error) {
+func connect(socketPath string) (net.Conn, error) {
 	return winio.DialPipe(socketPath, nil)
 }
