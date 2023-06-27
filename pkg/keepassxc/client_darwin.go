@@ -6,6 +6,7 @@ package keepassxc
 import (
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 )
@@ -21,4 +22,8 @@ func SocketPath() (string, error) {
 		return "", fmt.Errorf("keepassxc socket not found '%s'", path)
 	}
 	return path, nil
+}
+
+func connect(socketPath string) (net.Conn, error) {
+	return net.DialUnix("unix", nil, &net.UnixAddr{Name: socketPath, Net: "unix"})
 }

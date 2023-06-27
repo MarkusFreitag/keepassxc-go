@@ -26,7 +26,7 @@ var (
 type Client struct {
 	socketPath      string
 	applicationName string
-	socket          *net.UnixConn
+	socket          net.Conn
 
 	privateKey nacl.Key
 	publicKey  nacl.Key
@@ -163,7 +163,7 @@ func (c *Client) Connect() error {
 	}
 
 	var err error
-	c.socket, err = net.DialUnix("unix", nil, &net.UnixAddr{Name: c.socketPath, Net: "unix"})
+	c.socket, err = connect(c.socketPath)
 	return err
 }
 
