@@ -1,3 +1,9 @@
+# For next release
+  * **Guilhem Bonnefille**
+    * feat: add support for windows
+
+*Not released yet*
+
 # Patch Release v1.4.1 (2023-06-22)
   * **Markus Freitag**
     * pkg/keepassxc/client_linux: fix socket-path lookup routine
