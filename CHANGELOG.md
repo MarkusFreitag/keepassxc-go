@@ -1,8 +1,8 @@
-# For next release
+# Minor Release v1.5.0 (2023-06-27)
   * **Guilhem Bonnefille**
     * feat: add support for windows
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Patch Release v1.4.1 (2023-06-22)
   * **Markus Freitag**
