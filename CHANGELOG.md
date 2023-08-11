@@ -1,9 +1,9 @@
-# For next release
+# Patch Release v1.5.1 (2023-08-11)
   * **Markus Freitag**
     * cmd: dont initialize the client within a persistentprerun
       As reported in issue#13 doing so will interfere with the auto-generated completion commands
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Minor Release v1.5.0 (2023-06-27)
   * **Guilhem Bonnefille**
