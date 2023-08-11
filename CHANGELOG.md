@@ -1,3 +1,10 @@
+# For next release
+  * **Markus Freitag**
+    * cmd: dont initialize the client within a persistentprerun
+      As reported in issue#13 doing so will interfere with the auto-generated completion commands
+
+*Not released yet*
+
 # Minor Release v1.5.0 (2023-06-27)
   * **Guilhem Bonnefille**
     * feat: add support for windows

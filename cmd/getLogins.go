@@ -39,6 +39,11 @@ var getLoginsCmd = &cobra.Command{
 	Short: "query info for the specified url",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		client, err := initializeClient()
+		if err != nil {
+			return err
+		}
+
 		entries, err := client.GetLogins(args[0])
 		if err != nil {
 			return err
