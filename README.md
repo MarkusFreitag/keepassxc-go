@@ -4,10 +4,7 @@ This repository contains a library as well as a basic CLI tool to interact with 
 
 ## Installation
 
-To install it, you can either use the following one-liner or download the binary or one of the packages from the releases.
-```bash
-curl -Ls https://git.io/keepassxc-go.sh | sh
-```
+To install it, you can download the binary or one of the packages (deb, rpm) from the [releases](https://github.com/MarkusFreitag/keepassxc-go/releases/latest).
 
 ## Usage
 
