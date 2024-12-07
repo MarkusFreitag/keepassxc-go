@@ -80,9 +80,6 @@ var getLoginsCmd = &cobra.Command{
 				pass = entry.Password.Plaintext()
 			}
 			fmt.Printf("%s %s %s", entry.Name, entry.Login, pass)
-			if entry.Expired {
-				fmt.Print(" EXPIRED")
-			}
 			fmt.Print("\n")
 
 			if !showAll {
