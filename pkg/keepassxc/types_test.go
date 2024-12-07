@@ -33,9 +33,8 @@ func TestTypeBoolString(t *testing.T) {
 
 func TestTypeFields(t *testing.T) {
 	fields := make(keepassxc.Fields, 0)
-	require.Equal(t, "", fields.String())
-	fields = append(fields, "first")
-	require.Equal(t, "first", fields.String())
-	fields = append(fields, "second", "third")
-	require.Equal(t, "first,second,third", fields.String())
+	require.Equal(t, "{}", fields.String())
+	fields = append(fields, map[string]keepassxc.Password{"KPH: first": "firstval"}, map[string]keepassxc.Password{"KPH:   second": "secondval"})
+	fMap := fields.ToMap()
+	require.Equal(t, fMap, map[string]keepassxc.Password{"first": "firstval", "second": "secondval"})
 }
