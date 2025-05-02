@@ -275,7 +275,35 @@ func (c *Client) CreateDatabaseGroup(name string) (string, string, error) {
 }
 
 func (c *Client) GetTOTP(uuid string) (string, error) {
-	return "", ErrNotImplemented
+	msg := Message{
+		"action": "get-totp",
+		"uuid":   uuid,
+	}
+	resp, err := c.sendMessage(msg, true)
+	if err != nil {
+		return "", err
+	}
+
+	message := resp["message"].(map[string]interface{})
+
+	success, ok := message["success"]
+	if !ok {
+		return "", ErrInvalidResponse
+	}
+	if successStr, ok := success.(string); !ok {
+		return "", ErrInvalidResponse
+	} else if successStr != "true" {
+		return "", fmt.Errorf("failed to get TOTP for %s", uuid)
+	}
+	totp, ok := message["totp"]
+	if !ok {
+		return "", ErrInvalidResponse
+	}
+	if totpStr, ok := totp.(string); !ok {
+		return "", ErrInvalidResponse
+	} else {
+		return totpStr, nil
+	}
 }
 
 func DefaultClient() (*Client, error) {
