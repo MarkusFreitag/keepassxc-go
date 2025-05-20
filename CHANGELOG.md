@@ -1,3 +1,11 @@
+# For next release
+  * **Markus Freitag**
+    * cmd: add get-totp command
+  * **secDre4mer**
+    * pkg/keepassxc/client: implement get-totp
+
+*Not released yet*
+
 # Patch Release v1.5.1 (2023-08-11)
   * **Markus Freitag**
     * cmd: dont initialize the client within a persistentprerun
