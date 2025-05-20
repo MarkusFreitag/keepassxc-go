@@ -1,11 +1,11 @@
-# For next release
+# Minor Release v1.6.0 (2025-05-20)
   * **Markus Freitag**
     * cmd: add get-totp command
     * go: update dependencies
   * **secDre4mer**
     * pkg/keepassxc/client: implement get-totp
 
-*Not released yet*
+*Released by Markus Freitag <fmarkus@mailbox.org>*
 
 # Patch Release v1.5.1 (2023-08-11)
   * **Markus Freitag**
