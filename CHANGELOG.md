@@ -1,6 +1,7 @@
 # For next release
   * **Markus Freitag**
     * cmd: add get-totp command
+    * go: update dependencies
   * **secDre4mer**
     * pkg/keepassxc/client: implement get-totp
 
