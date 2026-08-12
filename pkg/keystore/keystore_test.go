@@ -14,12 +14,16 @@ func TestKeystore(t *testing.T) {
 	fakeUserConfigDir, err := os.MkdirTemp("", "fakeUserConfigDir")
 	require.Nil(t, err)
 	require.NotEmpty(t, fakeUserConfigDir)
-	defer os.RemoveAll(fakeUserConfigDir)
+	t.Cleanup(func() {
+		if err := os.RemoveAll(fakeUserConfigDir); err != nil {
+			t.Logf("failed to cleanup user-config-dir: %s", err.Error())
+		}
+	})
 
 	patch := monkey.ApplyFunc(os.UserConfigDir, func() (string, error) {
 		return fakeUserConfigDir, nil
 	})
-	defer patch.Reset()
+	t.Cleanup(patch.Reset)
 
 	require.Nil(t, new(keystore.Profile).NaclKey())
 
