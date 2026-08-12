@@ -1,6 +1,10 @@
 # For next release
   * **Markus Freitag**
     * feat(pkg/keypassxc): add socket directory for flatpak installations
+    * chore(go): update minimum verison to 1.25
+    * chore: update dependencies
+      github.com/kevinburke/nacl v0.0.0-20250518034207-4fa338b68f84 => v0.9.0
+      github.com/spf13/cobra v1.9.1 => v1.10.2
 
 *Not released yet*
 
