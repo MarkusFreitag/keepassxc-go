@@ -1,3 +1,9 @@
+# For next release
+  * **Markus Freitag**
+    * feat(pkg/keypassxc): add socket directory for flatpak installations
+
+*Not released yet*
+
 # Minor Release v1.6.0 (2025-05-20)
   * **Markus Freitag**
     * cmd: add get-totp command

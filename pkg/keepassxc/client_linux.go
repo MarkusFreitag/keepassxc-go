@@ -18,6 +18,8 @@ var lookupPaths = []string{
 	os.Getenv("TMPDIR"),
 	path.Join(os.Getenv("HOME"), "/snap/keepassxc/common/"),
 	fmt.Sprintf("/run/user/%d/", os.Getuid()),
+	// keepassxc installed via flatpak
+	path.Join(os.Getenv("XDG_RUNTIME_DIR"), "app/org.keepassxc.KeePassXC"),
 }
 
 func SocketPath() (string, error) {
